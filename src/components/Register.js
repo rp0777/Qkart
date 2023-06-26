@@ -74,7 +74,7 @@ const Register = () => {
       setLoading(false);
 
       if (e.response && e.response.status === 400) {
-        enqueueSnackbar(e.response.message, {variant: "error"});
+        enqueueSnackbar(e.response.data.message, {variant: "error"});
       } else {
         enqueueSnackbar(
           "Something went wrong. Check that the backend is running, reachable and returns valid JSON.",
