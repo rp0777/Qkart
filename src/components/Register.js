@@ -8,6 +8,7 @@ import { config } from "../App";
 import Footer from "./Footer";
 import Header from "./Header";
 import "./Register.css";
+// eslint-disable-next-line
 
 const Register = () => {
   const { enqueueSnackbar } = useSnackbar();
