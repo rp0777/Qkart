@@ -3,7 +3,6 @@ import { Box } from "@mui/system";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
-// eslint-disable-next-line
 import { useHistory, Link } from "react-router-dom";
 import { config } from "../App";
 import Footer from "./Footer";
