@@ -89,7 +89,6 @@ const Products = () => {
 
       setProducts(response.data);
       setFilteredProducts(response.data);
-      console.log(filteredProducts)
       //return response.data;
 
     } catch (e) {
@@ -131,7 +130,6 @@ const Products = () => {
   const performSearch = async (text) => {
     try {
       setLoading(true);
-      console.log("hello")
       const response = await axios.get(
         `${config.endpoint}/products/search?value=${text}`
       );
