@@ -13,6 +13,7 @@ import { config } from "../App";
 import Footer from "./Footer";
 import Header from "./Header";
 import "./Products.css";
+import ProductCard from "./ProductCard";
 
 // Definition of Data Structures used
 /**
@@ -28,6 +29,17 @@ import "./Products.css";
 
 
 const Products = () => {
+  const { enqueueSnackbar } = useSnackbar();
+  // const history = useHistory();
+
+  const [products, setProducts] = useState([]);
+
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const [isLoading, setLoading] = useState(false);
+
+  const [debounceTimeout, setDebounceTimeout] = useState(null);
+
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Fetch products data and store it
   /**
@@ -67,7 +79,40 @@ const Products = () => {
    * }
    */
   const performAPICall = async () => {
+    setLoading(true);
+
+    try {
+      // console.log
+      const response = await axios.get(`${config.endpoint}/products`)
+
+      setLoading(false);
+
+      setProducts(response.data);
+      setFilteredProducts(response.data);
+      console.log(filteredProducts)
+      //return response.data;
+
+    } catch (e) {
+      setLoading(false);
+
+      if (e.response && e.response.status === 500) {
+        enqueueSnackbar(e.response.data.message, { variant: "error" });
+        return null;
+      } else {
+        enqueueSnackbar(
+          "Could not fetch products. check that the backend is running, reachable and return valid JSON",
+          { variant: "error" }
+        );
+      }
   };
+  setLoading(false)
+}
+
+  // performAPICall();
+
+  useEffect(() => {
+    performAPICall();
+  },[])
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Implement search logic
   /**
@@ -84,6 +129,38 @@ const Products = () => {
    *
    */
   const performSearch = async (text) => {
+    try {
+      setLoading(true);
+      console.log("hello")
+      const response = await axios.get(
+        `${config.endpoint}/products/search?value=${text}`
+      );
+      setFilteredProducts(response.data);
+    setLoading(false);
+      return response.data;
+
+    } catch (e) {
+      
+
+      if (e.response) {
+        if (e.response.status === 404) {
+          setFilteredProducts([]);
+        }
+
+        if (e.response.status === 500) {
+          enqueueSnackbar(e.response.data.message, { variant: "error"});
+          setFilteredProducts(products);
+        }
+      } else {
+        enqueueSnackbar(
+          "Could not fetch products. Check that the backend is running, reachable and returns valid JSON.",
+          {
+            variant: "error",
+          }
+        );
+      }
+    }
+    setLoading(false);
   };
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Optimise API calls with debounce search implementation
@@ -99,6 +176,16 @@ const Products = () => {
    *
    */
   const debounceSearch = (event, debounceTimeout) => {
+    const value=event.target.value;
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+
+    const timeout= setTimeout(() => {
+      performSearch(value);
+    }, 500);
+
+    setDebounceTimeout(timeout);
   };
 
 
@@ -111,7 +198,21 @@ const Products = () => {
     <div>
       <Header>
         {/* TODO: CRIO_TASK_MODULE_PRODUCTS - Display search bar in the header for Products page */}
-
+        <TextField
+          className="search-desktop"
+          size="small"
+          InputProps={{
+            className: "search",
+            endAdornment: (
+              <InputAdornment position="end">
+                <Search color="primary"/>  
+              </InputAdornment>
+            )
+          }}
+          placeholder="Search for items/categories"
+          name="search"
+          onChange={(e) => debounceSearch(e, debounceTimeout)}
+        />
       </Header>
 
       {/* Search view for mobiles */}
@@ -139,9 +240,34 @@ const Products = () => {
            </Box>
          </Grid>
        </Grid>
+       
+       {isLoading ? (
+            <Box className="loading">
+              <CircularProgress />
+              <h4>Loading Products...</h4>
+            </Box>
+          ) : (
+            <Grid container marginY="1rem" paddingX="1rem" spacing={2}>
+              {filteredProducts.length ? (
+                filteredProducts.map((product) => (
+                  <Grid item xs={6} md={3} key={product["_id"]}>
+                    <ProductCard 
+                      product={product}
+                    />
+                  </Grid>
+                ))
+              ) : (
+                <Box>
+                  <SentimentDissatisfied color="action" />
+                  <h4 style={{ color: "#636363" }}> No products found</h4>
+                </Box>
+              )}
+            </Grid>
+          )}
+
       <Footer />
     </div>
   );
 };
 
-export default Products;
+export default Products;                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
