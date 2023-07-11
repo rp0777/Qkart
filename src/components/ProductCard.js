@@ -11,7 +11,7 @@ import {
 import React from "react";
 import "./ProductCard.css";
 
-const ProductCard = ({product}) => {
+const ProductCard = ({ product, handleAddToCart }) => {
   // const [product, setProduct] = useState({
   // "name":"Tan Leatherette Weekender Duffle",
   // "category":"Fashion",
@@ -42,7 +42,9 @@ const ProductCard = ({product}) => {
           fullWidth
           variant="contained"
           startIcon={<AddShoppingCartOutlined />}
-          // onClick={handleAddToCart}
+          onClick={() => {
+            handleAddToCart(product._id, 1);
+          }}
         >
           Add to cart
         </Button>

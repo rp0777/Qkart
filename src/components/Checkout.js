@@ -70,6 +70,7 @@ const Checkout = () => {
             </Typography>
             <Divider />
             <Box>
+              
             </Box>
 
 
@@ -84,6 +85,7 @@ const Checkout = () => {
             <Box my="1rem">
               <Typography>Wallet</Typography>
               <Typography>
+              {/* eslint-disable-next-line */}
                 Pay ${getTotalCartValue(items)} of available $
                 {localStorage.getItem("balance")}
               </Typography>
@@ -98,6 +100,7 @@ const Checkout = () => {
           </Box>
         </Grid>
         <Grid item xs={12} md={3} bgcolor="#E9F5E1">
+        {/* eslint-disable-next-line */}
           <Cart isReadOnly products={products} items={items} />
         </Grid>
       </Grid>
