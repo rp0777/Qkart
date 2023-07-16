@@ -91,7 +91,9 @@ const Products = () => {
       setFilteredProducts(response.data);
       
       let items = await fetchCart(token);
-      setItems(generateCartItemsFrom(items, response.data));
+      // if (!token) {
+        setItems(generateCartItemsFrom(items, response.data));
+      // }
 
     } catch (e) {
       setLoading(false);

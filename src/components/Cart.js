@@ -89,6 +89,9 @@ export const getTotalCartValue = (items = []) => {
  *
  */
  export const getTotalItems = (items = []) => {
+  let totalQty = 0;
+  items.forEach(item => totalQty += item.qty);
+  return totalQty;
 };
 
 // TODO: CRIO_TASK_MODULE_CHECKOUT - Add static quantity view for Checkout page cart
@@ -136,7 +139,7 @@ const ItemQuantity = ({ value, handleAdd, handleDelete }) => {
  *
  *
  */
-const Cart = ({ products, items = [], handleQuantity }) => {
+const Cart = ({ products, items = [], handleQuantity, isReadOnly }) => {
   const history = useHistory();
   if (!items.length) {
     return (
@@ -190,7 +193,7 @@ const Cart = ({ products, items = [], handleQuantity }) => {
                   justifyContent="space-between"
                   alignItems="center"
                 >
-                  <ItemQuantity
+                  {!isReadOnly && <ItemQuantity
                     // Add required props by checking implementation
                     value={item.qty}
                     handleAdd={() => {
@@ -205,7 +208,10 @@ const Cart = ({ products, items = [], handleQuantity }) => {
                         item.qty - 1
                       );
                     }}
-                  />
+                  />}
+                  {isReadOnly && <Box padding="0.5rem" fontWeight="700">
+                    Qty : {item.qty}
+                  </Box>}
                   <Box padding="0.5rem" fontWeight="700">
                     ${item.cost}
                   </Box>
@@ -213,22 +219,29 @@ const Cart = ({ products, items = [], handleQuantity }) => {
               </Box>
             </Box>
           ))}
-
-          <Box color="#3C3C3C" alignSelf="center">
-            Order total
-          </Box>
-          <Box
-            color="#3C3C3C"
-            fontWeight="700"
-            fontSize="1.5rem"
-            alignSelf="center"
-            data-testid="cart-total"
-          >
-            ${getTotalCartValue(items)}
-          </Box>
         </Box>
+
+        <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            padding={2}
+          >
+            <Box color="#3C3C3C" alignSelf="center">
+              Order total
+            </Box>
+            <Box
+              color="#3C3C3C"
+              fontWeight="700"
+              fontSize="1.5rem"
+              alignSelf="center"
+              data-testid="cart-total"
+            >
+              ${getTotalCartValue(items)}
+            </Box>
+          </Stack>
       
-        <Box display="flex" justifyContent="flex-end" className="cart-footer">
+        {!isReadOnly && <Box display="flex" justifyContent="flex-end" className="cart-footer">
           <Button
             color="primary"
             variant="contained"
@@ -241,8 +254,27 @@ const Cart = ({ products, items = [], handleQuantity }) => {
           >
             Checkout
           </Button>
-        </Box>
+        </Box>}
       </Box>
+      {isReadOnly && <Box className="cart" style={{padding: '2rem'}}>
+        <h2>Order Details</h2>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <p>Products</p>
+          <p>{getTotalItems(items)}</p>
+        </div>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <p>Subtotal</p>
+          <p>${getTotalCartValue(items)}</p>
+        </div>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <p>Shipping Charges</p>
+          <p>${0}</p>
+        </div>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <h3>Total</h3>
+          <h3>${getTotalCartValue(items)}</h3>
+        </div>
+      </Box>}
     </>
   );
 };
